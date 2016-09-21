@@ -6,10 +6,18 @@ const Game = require('./game');
 /* Global variables */
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
+var image = new Image();
+image.src = 'assets/animals.png';
 
 // We have 9 pairs of possible cards that are about 212px square
 var cards = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8];
 var board = [];
+
+while (cards.length > 0) {
+    var index = Math.floor(Math.random() * (cards.length - 1));
+    board.push({ card: cards[index], flip: true });
+    cards.splice(index, 1);
+}
 
 // TODO: Place the cards on the board in random order
 
@@ -53,6 +61,28 @@ function update(elapsedTime) {
 function render(elapsedTime, ctx) {
   ctx.fillStyle = "#ff7777";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+    //board.length/6
+  for (var y = 0; y < 3; y++) {
+      for (var x = 0; x < 6; x++) {
+          //var i = y * 6 + x;
+          var card = board[y * 6 + x];
+          if (card.flip) {
+              //render cute animal
+              ctx.drawImage(image,
+                  // Source rect
+                  card.card % 3 * 212, Math.floor(card.card / 3) * 212, 212, 212,
+                  // Dest rect
+                  x * 165 + 3, y * 165 + 3, 160, 160
+              );
+          }
+          else {
+              // draw the back of the card (160x160px)
+              ctx.fillStyle = "#3333ff";
+              // 165 allows 2px of space between each card
+              ctx.fillRect(x * 165 + 3, y * 165 + 3, 160, 160);
+          }
+      }
+  }
 
   // TODO: Render the board
 }
